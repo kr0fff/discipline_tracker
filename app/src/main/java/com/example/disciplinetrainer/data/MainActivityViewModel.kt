@@ -23,13 +23,14 @@ class MainActivityViewModel : ViewModel() {
     }
     fun getQuotesByQuery() {
         viewModelScope.launch {
-            quotesUiState = try {
+           /* quotesUiState = try {
                 QuotesUiState.Success(AppContainer().getQuotes())
             } catch (e: IOException) {
                 QuotesUiState.Error
             } catch (e: HttpException) {
                 QuotesUiState.Error
-            }
+            }*/
+            quotesUiState = QuotesUiState.Success(AppContainer().getQuotes())
         }
     }
 }

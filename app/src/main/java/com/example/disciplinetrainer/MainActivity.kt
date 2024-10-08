@@ -4,14 +4,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.disciplinetrainer.data.MainActivityViewModel
+import com.example.disciplinetrainer.data.QuotesUiState
 import com.example.disciplinetrainer.ui.theme.DisciplineTrainerTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,12 +24,22 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             DisciplineTrainerTheme {
-                val quotes = MainActivityViewModel().quotesUiState
+                val viewModel = MainActivityViewModel()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = quotes.toString(),
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    Column(
+                        verticalArrangement = Arrangement.SpaceAround,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Greeting(
+                            name = viewModel.quotesUiState,
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                        Button(onClick = {  }) {
+                            Text("Click")
+                        }
+
+                    }
+
                 }
             }
         }
@@ -33,17 +47,37 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun Greeting(name: QuotesUiState, modifier: Modifier = Modifier) {
+    when (name) {
+        QuotesUiState.Error -> {
+            Text(
+                text = "Error!",
+                modifier = modifier
+            )
+        }
+
+        QuotesUiState.Loading -> {
+            Text(
+                text = "Loading!",
+                modifier = modifier
+            )
+        }
+
+        is QuotesUiState.Success -> {
+            Text(
+                text = "Hello $name!",
+                modifier = modifier
+            )
+        }
+    }
+
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     DisciplineTrainerTheme {
         Greeting("Android")
     }
-}
+}*/
