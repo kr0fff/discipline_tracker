@@ -1,6 +1,7 @@
 package com.example.disciplinetrainer
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -27,17 +28,18 @@ class MainActivity : ComponentActivity() {
         setContent {
             DisciplineTrainerTheme {
                 val viewModel = MainActivityViewModel()
-                val quotes = viewModel.quotesUiState.collectAsState().value
+                val quotes = viewModel.quotesUiState.collectAsState()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column(
                         verticalArrangement = Arrangement.SpaceAround,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+
                         Greeting(
-                            response = quotes,
+                            response = quotes.value,
                             modifier = Modifier.padding(innerPadding)
                         )
-                        Button(onClick = { }) {
+                        Button(onClick = { viewModel.getQuotesByQuery() }) {
                             Text("Click")
                         }
 
@@ -51,41 +53,37 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(response: QuotesUiState, modifier: Modifier = Modifier) {
-    when (response) {
-        QuotesUiState.Error -> {
+
+    Log.d("UI_STATE_LOG", response.toString())
+    when {
+        response.error != null -> {
             Text(
-                text = "Error!",
+                text = response.error,
                 modifier = modifier
             )
         }
 
-        QuotesUiState.Loading -> {
+        response.isLoading -> {
             Text(
                 text = "Loading!",
                 modifier = modifier
             )
         }
 
-        is QuotesUiState.Success -> {
-            val quote = response.quotes.proceedSingleQuote()
-            if (quote != null) {
-                Text(
-                    text = "Hello ${quote.quote}!",
-                    modifier = modifier
-                )
-            }
+        response.quotes.isNotEmpty() -> {
+            val quote = response.quotes.first()
+            Text(
+                text = "Hello ${quote.quote}!",
+                modifier = modifier
+            )
+        }
 
+        else -> {
+            Text(
+                text = "No quotes found!",
+                modifier = modifier
+            )
         }
     }
 
 }
-
-fun <T> List<T>.proceedSingleQuote(): Quote? {
-    if (this.size == 1) {
-        val quote = this.first() as Quote
-        return quote
-    } else {
-        return null
-    }
-}
-
