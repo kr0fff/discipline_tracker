@@ -12,9 +12,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.disciplinetrainer.data.MainActivityViewModel
+import com.example.disciplinetrainer.data.Quote
 import com.example.disciplinetrainer.data.QuotesUiState
 import com.example.disciplinetrainer.ui.theme.DisciplineTrainerTheme
 
@@ -25,16 +27,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             DisciplineTrainerTheme {
                 val viewModel = MainActivityViewModel()
+                val quotes = viewModel.quotesUiState.collectAsState().value
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column(
                         verticalArrangement = Arrangement.SpaceAround,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Greeting(
-                            name = viewModel.quotesUiState,
+                            response = quotes,
                             modifier = Modifier.padding(innerPadding)
                         )
-                        Button(onClick = {  }) {
+                        Button(onClick = { }) {
                             Text("Click")
                         }
 
@@ -47,8 +50,8 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: QuotesUiState, modifier: Modifier = Modifier) {
-    when (name) {
+fun Greeting(response: QuotesUiState, modifier: Modifier = Modifier) {
+    when (response) {
         QuotesUiState.Error -> {
             Text(
                 text = "Error!",
@@ -64,20 +67,25 @@ fun Greeting(name: QuotesUiState, modifier: Modifier = Modifier) {
         }
 
         is QuotesUiState.Success -> {
-            Text(
-                text = "Hello $name!",
-                modifier = modifier
-            )
+            val quote = response.quotes.proceedSingleQuote()
+            if (quote != null) {
+                Text(
+                    text = "Hello ${quote.quote}!",
+                    modifier = modifier
+                )
+            }
+
         }
     }
 
 }
 
-/*
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    DisciplineTrainerTheme {
-        Greeting("Android")
+fun <T> List<T>.proceedSingleQuote(): Quote? {
+    if (this.size == 1) {
+        val quote = this.first() as Quote
+        return quote
+    } else {
+        return null
     }
-}*/
+}
+

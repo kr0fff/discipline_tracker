@@ -5,5 +5,5 @@ import retrofit2.http.Query
 
 interface QuotesApi {
     @GET("v1/quotes?")
-    suspend fun getQuotes(@Query("page") quoteType: String): List<Quote>
+    suspend fun getQuotes(@Query("category") quoteType: String): List<Quote>
 }
