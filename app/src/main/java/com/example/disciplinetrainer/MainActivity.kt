@@ -16,9 +16,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.disciplinetrainer.data.MainActivityViewModel
 import com.example.disciplinetrainer.data.Quote
@@ -51,9 +54,9 @@ fun DefaultPreview() {
 }
 
 @Composable
-fun RenderApp() {
-    val viewModel = MainActivityViewModel()
-    val quotes = viewModel.quotesUiState.collectAsState()
+fun RenderApp(viewModel: MainActivityViewModel = viewModel())  {
+    val quotes by viewModel.quotesUiState.collectAsState()
+
     Scaffold { innerPadding ->
         Surface(modifier = Modifier.fillMaxSize()) {
             Column(
@@ -62,7 +65,7 @@ fun RenderApp() {
                 modifier = Modifier.padding(innerPadding)
             ) {
                 Greeting(
-                    response = quotes.value,
+                    response = quotes,
                     onRefreshClicked = { viewModel.getQuotesByQuery() }
                 )
             }

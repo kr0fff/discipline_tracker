@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -17,7 +18,7 @@ data class QuotesUiState(
 
 class MainActivityViewModel : ViewModel() {
     private var _quotesUiState = MutableStateFlow(QuotesUiState())
-    val quotesUiState: StateFlow<QuotesUiState> = _quotesUiState
+    val quotesUiState: StateFlow<QuotesUiState> = _quotesUiState.asStateFlow()
 
     init {
         getQuotesByQuery()
